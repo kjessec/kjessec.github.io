@@ -22215,7 +22215,7 @@
 
 	var _reduxFormagic = __webpack_require__(199);
 
-	var _Survey = __webpack_require__(202);
+	var _Survey = __webpack_require__(201);
 
 	var _Survey2 = _interopRequireDefault(_Survey);
 
@@ -22264,12 +22264,13 @@
 
 	exports.formagic = formagic;
 	exports.bind = bind;
+	exports.defineReactive = defineReactive;
 
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reactive = __webpack_require__(200);
+	var _util = __webpack_require__(200);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22320,7 +22321,7 @@
 
 	          var selected = selector(props);
 	          if (selected) {
-	            this._repo = (0, _reactive.defineReactive)(selected, this.handleGlobalStateChange.bind(this));
+	            this._repo = defineReactive(selected, this.handleGlobalStateChange.bind(this));
 	          }
 	        }
 	      }, {
@@ -22351,29 +22352,17 @@
 	}
 
 	function bind(obj, key, type) {
+	  if (!type) type = function type(v) {
+	    return v;
+	  };
 	  return {
-	    value: obj[key] || '',
-	    checked: obj[key],
+	    value: type(obj[key]),
+	    checked: Boolean(!!obj[key]),
 	    onChange: function onChange(event) {
-	      obj[key] = type && type(event.target.value) || event.target.value;
+	      obj[key] = type(event.target.value);
 	    }
 	  };
 	}
-
-/***/ },
-/* 200 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.defineReactive = defineReactive;
-
-	var _util = __webpack_require__(201);
-
-	var isArray = Array.isArray;
 
 	function defineReactive(source, triggerDispatch) {
 	  var newObj = {};
@@ -22384,7 +22373,7 @@
 	    var initialState = source[key];
 	    var _state = void 0;
 
-	    if (isArray(initialState)) {
+	    if ((0, _util.isArray)(initialState)) {
 	      _state = initialState.map(function (state) {
 	        if ((0, _util.isObject)(state)) return defineReactive(state, triggerDispatch);
 	        // do not support array => primitive
@@ -22416,7 +22405,7 @@
 	}
 
 /***/ },
-/* 201 */
+/* 200 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -22429,8 +22418,10 @@
 	  return obj === Object(obj);
 	}
 
+	var isArray = exports.isArray = Array.isArray;
+
 /***/ },
-/* 202 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
