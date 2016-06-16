@@ -4268,8 +4268,12 @@
 
 	var _ducks = __webpack_require__(52);
 
+	var _ducks2 = _interopRequireDefault(_ducks);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	var store = (0, _redux.createStore)((0, _redux.combineReducers)({
-	  survey: _ducks.reducer
+	  survey: _ducks2.default
 	}), window.devToolsExtension ? window.devToolsExtension() : function (f) {
 	  return f;
 	});
@@ -5126,7 +5130,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.reducer = exports.SAVE_STATE = exports.ADD_PERSON = exports.UPDATE_ALL = undefined;
+	exports.SAVE_STATE = exports.ADD_PERSON = exports.UPDATE_ALL = undefined;
 
 	var _handleActions;
 
@@ -5136,6 +5140,7 @@
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+	// default state
 	var INITIAL_STATE = {
 	  people: [],
 	  isModified: false,
@@ -5145,11 +5150,13 @@
 	  }
 	};
 
+	// some actions
 	var UPDATE_ALL = exports.UPDATE_ALL = (0, _reduxActions.createAction)('UPDATE_ALL');
 	var ADD_PERSON = exports.ADD_PERSON = (0, _reduxActions.createAction)('ADD_PERSON');
 	var SAVE_STATE = exports.SAVE_STATE = (0, _reduxActions.createAction)('SAVE_STATE');
 
-	var reducer = exports.reducer = (0, _reduxActions.handleActions)((_handleActions = {}, _defineProperty(_handleActions, UPDATE_ALL, function (state, action) {
+	// default reducer
+	exports.default = (0, _reduxActions.handleActions)((_handleActions = {}, _defineProperty(_handleActions, UPDATE_ALL, function (state, action) {
 	  return _extends({}, action.payload, {
 	    isModified: true
 	  });
@@ -22213,7 +22220,7 @@
 
 	var _reactRedux = __webpack_require__(189);
 
-	var _reduxFormagic = __webpack_require__(199);
+	var _reactFormagic = __webpack_require__(199);
 
 	var _Survey = __webpack_require__(201);
 
@@ -22221,17 +22228,17 @@
 
 	var _ducks = __webpack_require__(52);
 
+	var surveyActions = _interopRequireWildcard(_ducks);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var mapStateToProps = function mapStateToProps(state) {
 	  return { survey: state.survey };
 	};
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	  return _extends({}, (0, _redux.bindActionCreators)({
-	    UPDATE_ALL: _ducks.UPDATE_ALL,
-	    ADD_PERSON: _ducks.ADD_PERSON,
-	    SAVE_STATE: _ducks.SAVE_STATE
-	  }, dispatch), {
+	  return _extends({}, (0, _redux.bindActionCreators)(surveyActions, dispatch), {
 	    dispatch: dispatch //also pass down dispatch
 	  });
 	};
@@ -22242,11 +22249,13 @@
 	};
 
 	// mapChangesToDispatch
+	var UPDATE_ALL = surveyActions.UPDATE_ALL;
+
 	var subscribeToChanges = function subscribeToChanges(newState, dispatch) {
-	  return dispatch((0, _ducks.UPDATE_ALL)(newState.survey));
+	  return dispatch(UPDATE_ALL(newState.survey));
 	};
 
-	exports.default = (0, _reactRedux.connect)(mapPropsToFormagic, mapDispatchToProps)((0, _reduxFormagic.formagic)(mapPropsToFormagic, subscribeToChanges, { transclude: true })(_Survey2.default));
+	exports.default = (0, _reactRedux.connect)(mapPropsToFormagic, mapDispatchToProps)((0, _reactFormagic.formagic)(mapPropsToFormagic, subscribeToChanges)(_Survey2.default));
 
 /***/ },
 /* 199 */
@@ -22257,6 +22266,8 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
@@ -22280,21 +22291,23 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	function formagic(_selector, _onGlobalStateChange) {
-	  var _options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	var _defaultOptions = {
+	  transclude: true
+	};
 
+	function formagic(_selector, _onGlobalStateChange, _options) {
 	  return function _wrap(Component) {
 	    return function (_React$Component) {
-	      _inherits(FormagicWrapped, _React$Component);
+	      _inherits(FormagicWrapperComponent, _React$Component);
 
-	      function FormagicWrapped(props) {
-	        _classCallCheck(this, FormagicWrapped);
+	      function FormagicWrapperComponent(props) {
+	        _classCallCheck(this, FormagicWrapperComponent);
 
 	        // assign options
 
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FormagicWrapped).call(this, props));
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FormagicWrapperComponent).call(this, props));
 
-	        _this.options = _options;
+	        _this.options = _extends({}, _defaultOptions, _options);
 
 	        // assign selector
 	        _this.selector = _selector;
@@ -22304,25 +22317,27 @@
 
 	        // initialize repo
 	        _this._repo = {};
-
-	        _this.recalculate(props);
 	        return _this;
 	      }
 
-	      _createClass(FormagicWrapped, [{
+	      _createClass(FormagicWrapperComponent, [{
+	        key: 'componentWillMount',
+	        value: function componentWillMount() {
+	          this.recalculate(this.props);
+	        }
+	      }, {
 	        key: 'componentWillReceiveProps',
 	        value: function componentWillReceiveProps(nextProps) {
 	          this.recalculate(nextProps);
 	        }
 	      }, {
 	        key: 'recalculate',
-	        value: function recalculate(props) {
+	        value: function recalculate(dataTree) {
 	          var selector = this.selector;
 
-	          var selected = selector(props);
-	          if (selected) {
-	            this._repo = defineReactive(selected, this.handleGlobalStateChange.bind(this));
-	          }
+	          var selectedDataTree = selector(dataTree);
+
+	          this._repo = defineReactive(selectedDataTree, this.handleGlobalStateChange.bind(this));
 	        }
 	      }, {
 	        key: 'handleGlobalStateChange',
@@ -22342,11 +22357,11 @@
 
 	          var formagicProps = transclude ? _extends({}, _repo) : { formagic: _repo };
 
-	          return _react2.default.createElement(Component, _extends({}, this.state, this.props, formagicProps));
+	          return _react2.default.createElement(Component, _extends({}, this.props, formagicProps));
 	        }
 	      }]);
 
-	      return FormagicWrapped;
+	      return FormagicWrapperComponent;
 	    }(_react2.default.Component);
 	  };
 	}
@@ -22356,7 +22371,7 @@
 	    return v;
 	  };
 	  return {
-	    value: type(obj[key]),
+	    value: type(obj[key] || ''),
 	    checked: Boolean(!!obj[key]),
 	    onChange: function onChange(event) {
 	      obj[key] = type(event.target.value);
@@ -22365,40 +22380,50 @@
 	}
 
 	function defineReactive(source, triggerDispatch) {
+	  // ignore primitive/function leaf
+	  if (typeof source === 'function' || (typeof source === 'undefined' ? 'undefined' : _typeof(source)) !== 'object') return source;
+
+	  // if object (object/array), walk through the members
+	  // and set reactivity
 	  var newObj = {};
-	  var keys = Object.keys(source);
 
-	  // walk
-	  keys.forEach(function (key) {
+	  // walk through the object
+	  Object.keys(source).forEach(function (key) {
 	    var initialState = source[key];
-	    var _state = void 0;
 
+	    // if array, map through the values and set reactivity
 	    if ((0, _util.isArray)(initialState)) {
-	      _state = initialState.map(function (state) {
-	        if ((0, _util.isObject)(state)) return defineReactive(state, triggerDispatch);
-	        // do not support array => primitive
-	        return state;
+	      newObj[key] = initialState.map(function (state) {
+	        return defineReactive(state, triggerDispatch);
 	      });
-	    } else if ((0, _util.isObject)(initialState)) {
-	      _state = defineReactive(initialState, triggerDispatch);
-	    } else {
-	      _state = initialState;
 	    }
 
-	    // define reactive property
-	    Object.defineProperty(newObj, key, {
-	      enumerable: true,
-	      get: function get() {
-	        return _state;
-	      },
-	      set: function set(nextState) {
-	        // set the internal state
-	        _state = nextState;
-
-	        // upon any value is being set, do triggerDispatch
-	        triggerDispatch();
+	    // if object, go deeper
+	    else if ((0, _util.isObject)(initialState)) {
+	        newObj[key] = defineReactive(initialState, triggerDispatch);
 	      }
-	    });
+
+	      // only make primitives reactive
+	      else {
+	          (function () {
+	            var _state = initialState;
+
+	            // define reactive property
+	            Object.defineProperty(newObj, key, {
+	              enumerable: true,
+	              get: function get() {
+	                return _state;
+	              },
+	              set: function set(nextState) {
+	                // set the internal state
+	                _state = nextState;
+
+	                // upon any value is being set, do triggerDispatch
+	                triggerDispatch();
+	              }
+	            });
+	          })();
+	        }
 	  });
 
 	  return newObj;
@@ -22438,7 +22463,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _reduxFormagic = __webpack_require__(199);
+	var _reactFormagic = __webpack_require__(199);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22477,7 +22502,7 @@
 	            null,
 	            'Title'
 	          ),
-	          _react2.default.createElement('input', _extends({ type: 'text' }, (0, _reduxFormagic.bind)(survey.meta, 'title', String)))
+	          _react2.default.createElement('input', _extends({ type: 'text' }, (0, _reactFormagic.bind)(survey.meta, 'title', String)))
 	        ),
 	        _react2.default.createElement(
 	          'div',
@@ -22503,7 +22528,7 @@
 	            null,
 	            'IsModified'
 	          ),
-	          _react2.default.createElement('input', _extends({ type: 'checkbox' }, (0, _reduxFormagic.bind)(survey, 'isModified')))
+	          _react2.default.createElement('input', _extends({ type: 'checkbox' }, (0, _reactFormagic.bind)(survey, 'isModified')))
 	        ),
 	        _react2.default.createElement(
 	          'div',
@@ -22522,7 +22547,7 @@
 	                null,
 	                'Name'
 	              ),
-	              _react2.default.createElement('input', _extends({ type: 'text' }, (0, _reduxFormagic.bind)(person, 'name'))),
+	              _react2.default.createElement('input', _extends({ type: 'text' }, (0, _reactFormagic.bind)(person, 'name'))),
 	              _react2.default.createElement(
 	                'h4',
 	                null,
@@ -22530,7 +22555,7 @@
 	              ),
 	              _react2.default.createElement('input', _extends({
 	                type: 'number'
-	              }, (0, _reduxFormagic.bind)(person, 'age', Number)))
+	              }, (0, _reactFormagic.bind)(person, 'age', Number)))
 	            );
 	          }),
 	          _react2.default.createElement(
