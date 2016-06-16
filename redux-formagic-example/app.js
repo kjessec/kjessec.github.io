@@ -4268,12 +4268,8 @@
 
 	var _ducks = __webpack_require__(52);
 
-	var _ducks2 = _interopRequireDefault(_ducks);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 	var store = (0, _redux.createStore)((0, _redux.combineReducers)({
-	  survey: _ducks2.default
+	  survey: _ducks.reducer
 	}), window.devToolsExtension ? window.devToolsExtension() : function (f) {
 	  return f;
 	});
@@ -5130,7 +5126,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.SAVE_STATE = exports.ADD_PERSON = exports.UPDATE_ALL = undefined;
+	exports.reducer = exports.SAVE_STATE = exports.ADD_PERSON = exports.UPDATE_ALL = undefined;
 
 	var _handleActions;
 
@@ -5140,7 +5136,6 @@
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-	// default state
 	var INITIAL_STATE = {
 	  people: [],
 	  isModified: false,
@@ -5150,13 +5145,11 @@
 	  }
 	};
 
-	// some actions
 	var UPDATE_ALL = exports.UPDATE_ALL = (0, _reduxActions.createAction)('UPDATE_ALL');
 	var ADD_PERSON = exports.ADD_PERSON = (0, _reduxActions.createAction)('ADD_PERSON');
 	var SAVE_STATE = exports.SAVE_STATE = (0, _reduxActions.createAction)('SAVE_STATE');
 
-	// default reducer
-	exports.default = (0, _reduxActions.handleActions)((_handleActions = {}, _defineProperty(_handleActions, UPDATE_ALL, function (state, action) {
+	var reducer = exports.reducer = (0, _reduxActions.handleActions)((_handleActions = {}, _defineProperty(_handleActions, UPDATE_ALL, function (state, action) {
 	  return _extends({}, action.payload, {
 	    isModified: true
 	  });
@@ -22228,7 +22221,7 @@
 
 	var _ducks = __webpack_require__(52);
 
-	var surveyActions = _interopRequireWildcard(_ducks);
+	var actions = _interopRequireWildcard(_ducks);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -22238,24 +22231,22 @@
 	  return { survey: state.survey };
 	};
 	var mapDispatchToProps = function mapDispatchToProps(dispatch) {
-	  return _extends({}, (0, _redux.bindActionCreators)(surveyActions, dispatch), {
+	  return _extends({}, (0, _redux.bindActionCreators)(actions, dispatch), {
 	    dispatch: dispatch //also pass down dispatch
 	  });
 	};
 
 	// formagic actions
-	var mapPropsToFormagic = function mapPropsToFormagic(props) {
+	var selectPropsToListen = function selectPropsToListen(props) {
 	  return { survey: props.survey };
 	};
 
 	// mapChangesToDispatch
-	var UPDATE_ALL = surveyActions.UPDATE_ALL;
-
 	var subscribeToChanges = function subscribeToChanges(newState, dispatch) {
-	  return dispatch(UPDATE_ALL(newState.survey));
+	  return dispatch(actions.UPDATE_ALL(newState.survey));
 	};
 
-	exports.default = (0, _reactRedux.connect)(mapPropsToFormagic, mapDispatchToProps)((0, _reactFormagic.formagic)(mapPropsToFormagic, subscribeToChanges)(_Survey2.default));
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)((0, _reactFormagic.formagic)(selectPropsToListen, subscribeToChanges)(_Survey2.default));
 
 /***/ },
 /* 199 */
@@ -22295,7 +22286,7 @@
 	  transclude: true
 	};
 
-	function formagic(_selector, _onGlobalStateChange, _options) {
+	function formagic(_selectPropsToListen, _subscribeToChanges, _options) {
 	  return function _wrap(Component) {
 	    return function (_React$Component) {
 	      _inherits(FormagicWrapperComponent, _React$Component);
@@ -22309,11 +22300,11 @@
 
 	        _this.options = _extends({}, _defaultOptions, _options);
 
-	        // assign selector
-	        _this.selector = _selector;
+	        // assign selectPropsToListen
+	        _this.selectPropsToListen = _selectPropsToListen;
 
-	        // assign onGlobalStateChange
-	        _this.onGlobalStateChange = _onGlobalStateChange;
+	        // assign subscribeToChanges
+	        _this.subscribeToChanges = _subscribeToChanges;
 
 	        // initialize repo
 	        _this._repo = {};
@@ -22323,19 +22314,19 @@
 	      _createClass(FormagicWrapperComponent, [{
 	        key: 'componentWillMount',
 	        value: function componentWillMount() {
-	          this.recalculate(this.props);
+	          this.recalculateReactiveTree(this.props);
 	        }
 	      }, {
 	        key: 'componentWillReceiveProps',
 	        value: function componentWillReceiveProps(nextProps) {
-	          this.recalculate(nextProps);
+	          this.recalculateReactiveTree(nextProps);
 	        }
 	      }, {
-	        key: 'recalculate',
-	        value: function recalculate(dataTree) {
-	          var selector = this.selector;
+	        key: 'recalculateReactiveTree',
+	        value: function recalculateReactiveTree(dataTree) {
+	          var selectPropsToListen = this.selectPropsToListen;
 
-	          var selectedDataTree = selector(dataTree);
+	          var selectedDataTree = selectPropsToListen(dataTree);
 
 	          this._repo = defineReactive(selectedDataTree, this.handleGlobalStateChange.bind(this));
 	        }
@@ -22344,10 +22335,10 @@
 	        value: function handleGlobalStateChange() {
 	          var dispatch = this.props.dispatch;
 	          var _repo = this._repo;
-	          var onGlobalStateChange = this.onGlobalStateChange;
+	          var subscribeToChanges = this.subscribeToChanges;
 
 
-	          onGlobalStateChange(_repo, dispatch);
+	          subscribeToChanges(_repo, dispatch);
 	        }
 	      }, {
 	        key: 'render',
